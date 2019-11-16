@@ -2,7 +2,8 @@
 
 (require (prefix-in db:: db))
 
-(provide init-app)
+(provide init-app
+         app/c)
 
 ;;; 没想到，我竟然也要在这里写一个全局状态
 (struct app [pool])
@@ -38,7 +39,3 @@
   (let* ([conn (ask-connection app)]
          [sql (cons stmt args)])
     (apply db::query (cons conn sql))))
-
-(module+ test
-  (define app (init-app))
-  (query app "table yshu"))
