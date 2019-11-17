@@ -1,5 +1,9 @@
 #lang racket
 
+#|
+用户身份验证相关。
+|#
+
 (require web-server/http)
 
 (module+ test
@@ -38,7 +42,3 @@
   (-> request? (or/c #f bytes?))
   (let ([headers (request-headers/raw req)])
     (find-header-rotom headers)))
-
-(define/contract (check-req-rotom req)
-  (-> request? boolean?)
-  #f)
