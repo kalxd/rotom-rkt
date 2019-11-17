@@ -3,7 +3,15 @@
 (require (prefix-in db:: db))
 
 (provide init-state
-         state/c)
+         state/c
+
+         query
+         query-rows
+         query-list
+         query-row
+         query-maybe-row
+         query-value
+         query-maybe-value)
 
 ;;; 没想到，我竟然也要在这里写一个全局状态
 (struct state [pool])
@@ -64,6 +72,12 @@
        (listof vector?))
   (apply-> db::query-rows state stmt args))
 
+(define/contract (query-list state stmt . args)
+  (->* (state/c db::statement?)
+       #:rest (listof any/c)
+       list?)
+  (apply-> db::query-list state stmt args))
+
 (define/contract (query-row state stmt . args)
   (->* (state/c db::statement?)
        #:rest (listof any/c)
@@ -75,3 +89,15 @@
        #:rest (listof any/c)
        (or/c vector? #f))
   (apply-> db::query-maybe-row state stmt args))
+
+(define/contract (query-value state stmt . args)
+  (->* (state/c db::statement?)
+       #:rest (listof any/c)
+       any/c)
+  (apply-> db::query-value state stmt args))
+
+(define/contract (query-maybe-value state stmt . args)
+  (->* (state/c db::statement?)
+       #:rest (listof any/c)
+       (or/c any/c #f))
+  (apply-> db::query-maybe-value state stmt args))
