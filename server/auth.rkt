@@ -4,7 +4,15 @@
 用户身份验证相关。
 |#
 
-(require web-server/http)
+(require web-server/http
+
+         "./type/user.rkt"
+         "./type/error.rkt"
+         "./state.rkt"
+
+         (prefix-in userHelper:: "./helper/user.rkt"))
+
+(provide check-req)
 
 (module+ test
   (require quickcheck)
@@ -42,3 +50,12 @@
   (-> request? (or/c #f bytes?))
   (let ([headers (request-headers/raw req)])
     (find-header-rotom headers)))
+
+;;; 检查是不是自己，遇到不陌生人直接抛错误。
+(define/contract (check-req state req)
+  (-> state/c request? user/c)
+  (let* ([token (rotom-ver req)]
+         [user (and token (userHelper::find-by-token state token))])
+    (begin
+      (unless user (raise (error:auth:user)))
+      user)))

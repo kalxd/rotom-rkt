@@ -3,17 +3,12 @@
 (require web-server/servlet
          web-server/servlet-env
 
-         "./server/state.rkt")
-
-;;; 服务内部任务。
-(define/contract (start app req)
-  (-> app/c request? void)
-  (displayln "程序启动了！")
-  (displayln req))
+         "./server/state.rkt"
+         "./server/app.rkt")
 
 (module+ main
   ;; 启动服务。
-  (let ([app (init-app)])
-    (serve/servlet ((curry start) app)
+  (let ([state (init-state)])
+    (serve/servlet ((curry execute) state)
                    #:command-line? #t
                    #:servlet-regexp #rx"")))

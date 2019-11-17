@@ -5,6 +5,8 @@
          web-server/http/response-structs)
 
 (provide send/error
+         error:base
+         error:base?
          error:auth:user
          error:no:user
          error:no:group
@@ -22,7 +24,8 @@
   (define (f _) code))
 
 ;;; 自定义错误
-(struct error:base [message]
+(struct error:base ([message #:auto])
+  #:auto-value "error"
   #:transparent
   #:methods gen:ToHttpCode [(binding-code ->http-code 500)]
   #:methods gen:ToErrorCode [(binding-code ->error-code 0)])

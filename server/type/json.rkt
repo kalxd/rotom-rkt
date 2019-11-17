@@ -1,6 +1,6 @@
 #lang racket
 
-(provide all-from-out)
+(provide (all-defined-out))
 
 (require racket/generic
          json)
@@ -26,3 +26,8 @@
               [boolean? (begin
                           (define json->string jsexpr->string)
                           (define json->byte jsexpr->bytes))]))
+
+(define/contract (make-json hashlist)
+  (-> (listof pair?) jsexpr?)
+  (let ([json (make-hash hashlist)])
+    (json->string json)))
