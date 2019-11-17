@@ -6,6 +6,7 @@
   (require quickcheck)
   (require rackunit/quickcheck))
 
+;;; 从头部中找出token。
 (define/contract (find-header-rotom headers)
   (-> (listof header?) (or/c #f bytes?))
   (let* ([f (λ (header) (equal? (header-field header) #"rotom"))]
@@ -32,12 +33,11 @@
               (false? (find-header-rotom headers)))))))
   (check-property find-header-rotom:no))
 
+;;; 从请求中找出token。
 (define/contract (rotom-ver req)
   (-> request? (or/c #f bytes?))
-  (let* ([headers (request-headers/raw req)]
-         [findp (λ (key . value) (equal? key "rotom"))]
-         [ver (findf findp headers)])
-    (or ver (last ver))))
+  (let ([headers (request-headers/raw req)])
+    (find-header-rotom headers)))
 
 (define/contract (check-req-rotom req)
   (-> request? boolean?)
