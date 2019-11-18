@@ -14,6 +14,6 @@
 (define/contract (execute state req)
   (-> state/c request? response?)
   (with-handlers
-    ([error:base? send/error])
+    ([error:box? send/error])
     (let ([user (check-req state req)])
       (response/xexpr '(button "sb")))))

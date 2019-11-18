@@ -57,5 +57,5 @@
   (let* ([token (rotom-ver req)]
          [user (and token (userHelper::find-by-token state token))])
     (begin
-      (unless user (raise (error:auth:user)))
+      (unless user (throw auth-user-code))
       user)))

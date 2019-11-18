@@ -1,60 +1,72 @@
 #lang racket
 
-(require racket/generic
-         json
+(require json
          web-server/http/response-structs)
 
-(provide send/error
-         error:base
-         error:base?
-         error:auth:user
-         error:no:user
-         error:no:group
-         error:no:emoji)
+(provide other-code
+         no-user-code
+         no-group-code
+         no-emoji-code
+         auth-user-code
+         error:box?
 
-;;; HTTP响应状态码
-(define-generics ToHttpCode
-  (->http-code ToHttpCode))
+         throw
+         send/error)
 
-;;; 我们自己的状态码。
-(define-generics ToErrorCode
-  (->error-code ToErrorCode))
+;;; 错误
+(struct error:box [code body status])
 
-(define-syntax-rule (binding-code f code)
-  (define (f _) code))
+(define error:box/c
+  (struct/c error:box
+            integer?
+            string?
+            (integer-in 100 999)))
 
-;;; 自定义错误
-(struct error:base ([message #:auto])
-  #:auto-value "error"
-  #:transparent
-  #:methods gen:ToHttpCode [(binding-code ->http-code 500)]
-  #:methods gen:ToErrorCode [(binding-code ->error-code 0)])
+;;; 以下是枚举.jpg
+(define other-code 0)
+(define no-user-code 101)
+(define no-group-code 102)
+(define no-emoji-code 103)
+(define auth-user-code 201)
 
-;;; 验证错误
-(struct error:auth:user error:base []
-  #:methods gen:ToHttpCode [(binding-code ->http-code 403)]
-  #:methods gen:ToErrorCode [(binding-code ->error-code 201)])
+(define error-msg-hash
+  (make-hash `((,no-user-code . "找不到用户")
+               (,no-group-code . "找不到分组")
+               (,no-emoji-code . "找不到表情")
+               (,auth-user-code . "你他妈的谁啊！"))))
 
-;;; 未找到
-(struct error:no error:base []
-  #:methods gen:ToHttpCode [(binding-code ->http-code 404)]
-  #:methods gen:ToErrorCode [(binding-code ->error-code 0)])
+(define/contract (->http-code code)
+  (-> integer? (integer-in 100 999))
+  (cond
+    [(= no-user-code code) 404]
+    [(= no-group-code code) 404]
+    [(= no-emoji-code code) 404]
+    [(= auth-user-code code) 403]
+    [else 500]))
 
-(struct error:no:user error:no []
-  #:methods gen:ToErrorCode [(binding-code ->error-code 101)])
-(struct error:no:group error:no []
-  #:methods gen:ToErrorCode [(binding-code ->error-code 102)])
-(struct error:no:emoji error:no []
-  #:methods gen:ToErrorCode [(binding-code ->error-code 103)])
+(define/contract (->http-msg code)
+  (-> integer? string?)
+  (hash-ref error-msg-hash
+            code
+            "未知错误"))
 
-;;; 响应错误
+(define/contract (pack code)
+  (-> integer? error:box/c)
+  (let ([status (->http-code code)]
+        [body (->http-msg code)])
+    (error:box code body status)))
+
+;;; 抛出错误
+(define/contract (throw code)
+  (-> integer? any)
+  (raise (pack code)))
+
+;;;　渲染出错误信息，总觉着不应该写在这里。
 (define/contract (send/error e)
-  (-> error:base? response?)
-  (let* ([code (->http-code e)]
-         [error-code (->error-code e)]
-         [msg (error:base-message e)]
-         [body (make-hash `((code . ,error-code)
-                            (err . ,msg)))])
+  (-> error:box/c response?)
+  (let ([body (make-hash `((err . ,(error:box-body e))
+                           (code . ,(error:box-status e))))]
+        [code (error:box-code e)])
     (response/full code
                    #f
                    (current-seconds)
