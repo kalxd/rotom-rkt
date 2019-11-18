@@ -2,7 +2,7 @@
 
 (require web-server/servlet-env
 
-         "./server/state.rkt"
+         "./server/type/state.rkt"
          "./server/main.rkt")
 
 (module+ main

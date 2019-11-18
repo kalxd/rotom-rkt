@@ -2,7 +2,7 @@
 
 (require "../type/user.rkt"
          "../type/error.rkt"
-         "../state.rkt")
+         "../app.rkt")
 
 (provide (all-defined-out))
 

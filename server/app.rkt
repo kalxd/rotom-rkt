@@ -1,43 +1,21 @@
 #lang racket
 
-(require (prefix-in db:: db))
+(require (prefix-in db:: db)
 
-(provide init-state
-         state/c
+         "./type/state.rkt")
+
+(provide state/c
 
          query
          query-rows
          query-list
          query-row
-         query-maybe-row
          query-value
          query-maybe-value)
 
-;;; 没想到，我竟然也要在这里写一个全局状态
-(struct state [pool])
-
-;;; state contract
-(define state/c (struct/c state db::connection-pool?))
-
-;;; 初始化数据库
-(define/contract (init-db)
-  (-> db::connection-pool?)
-  (db::connection-pool
-   (λ ()
-     (db::postgresql-connect #:user "kalxd"
-                             #:database "rotom"))))
-
-;;; 初始化全局状态
-(define/contract (init-state)
-  (-> state/c)
-  (let ([db (init-db)])
-    (state db)))
-
-;;; 从连接池里获得一个连接
-(define/contract (ask-connection state)
-  (-> state/c db::connection?)
-  (let ([pool (state-pool state)])
-    (db::connection-pool-lease pool)))
+#|
+业务紧密相连的模块，写sql离不开它。
+|#
 
 ;;; 拼拼凑凑凑出sql参数。
 ;;; 最后只给喂给对应的函数即可。
@@ -101,3 +79,4 @@
        #:rest (listof any/c)
        (or/c any/c #f))
   (apply-> db::query-maybe-value state stmt args))
+
