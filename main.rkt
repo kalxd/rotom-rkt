@@ -1,10 +1,9 @@
 #lang racket
 
-(require web-server/servlet
-         web-server/servlet-env
+(require web-server/servlet-env
 
          "./server/state.rkt"
-         "./server/app.rkt")
+         "./server/main.rkt")
 
 (module+ main
   ;; 启动服务。
