@@ -11,6 +11,7 @@
          error:box?
 
          throw
+         unwrap-maybe
          send/error)
 
 ;;; 错误
@@ -60,6 +61,11 @@
 (define/contract (throw code)
   (-> integer? any)
   (raise (pack code)))
+
+;;; 强制取值，若为空，抛出错误。
+(define/contract (unwrap-maybe v e)
+  (-> (or/c #f any/c) integer? any/c)
+  (or v (throw e)))
 
 ;;;　渲染出错误信息，总觉着不应该写在这里。
 (define/contract (send/error e)
