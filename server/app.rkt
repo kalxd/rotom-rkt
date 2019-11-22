@@ -11,6 +11,7 @@
          query-rows
          query-list
          query-row
+         query-maybe-row
          query-value
          query-maybe-value)
 
