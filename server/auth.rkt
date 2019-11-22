@@ -55,7 +55,9 @@
 (define/contract (check-req state req)
   (-> state/c request? user/c)
   (let* ([token (rotom-ver req)]
-         [user (and token (userHelper::find-by-token state token))])
+         [user (and token
+                    (userHelper::find-by-token state
+                                               (bytes->string/utf-8 token)))])
     (begin
       (unless user (throw auth-user-code))
       user)))
