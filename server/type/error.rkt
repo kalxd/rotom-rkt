@@ -14,7 +14,10 @@
          unwrap-maybe
          send/error)
 
-;;; 错误
+;;; 错误。
+;;; code：我们自己的状态码；
+;;; body：输出内容。
+;;; status：http状态码
 (struct error:box [code body status])
 
 (define error:box/c
@@ -71,9 +74,9 @@
 (define/contract (send/error e)
   (-> error:box/c response?)
   (let ([body (make-hash `((err . ,(error:box-body e))
-                           (code . ,(error:box-status e))))]
-        [code (error:box-code e)])
-    (response/full code
+                           (code . ,(error:box-code e))))]
+        [http-code (error:box-status e)])
+    (response/full http-code
                    #f
                    (current-seconds)
                    #"application/json"
