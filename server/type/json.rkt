@@ -6,6 +6,12 @@
 (require racket/generic
          json)
 
+(define-syntax (id-defaults stx)
+  (datum->syntax stx '(begin
+                        (define ->jsexpr identity)
+                        (define json->string jsexpr->string)
+                        (define json->byte jsexpr->bytes))))
+
 (define-generics ToJSON
   (->jsexpr ToJSON)
   (json->string ToJSON)
@@ -15,25 +21,11 @@
                  (compose jsexpr->string -->jsexpr))
                (define json->byte
                  (compose jsexpr->bytes -->jsexpr)))
-  #:defaults ([string? (begin
-                         (define ->jsexpr identity)
-                         (define json->string jsexpr->string)
-                         (define json->byte jsexpr->bytes))]
-              [number? (begin
-                         (define ->jsexpr identity)
-                         (define json->string jsexpr->string)
-                         (define json->byte jsexpr->bytes))]
-              [hash? (begin
-                       (define ->jsexpr identity)
-                       (define json->string jsexpr->string)
-                       (define json->byte jsexpr->bytes))]
-              [list? (begin
-                       (define json->string jsexpr->string)
-                       (define json->byte jsexpr->bytes))]
-              [boolean? (begin
-                          (define ->jsexpr identity)
-                          (define json->string jsexpr->string)
-                          (define json-byte jsexpr->bytes))]))
+  #:defaults ([string? (id-defaults)]
+              [number? (id-defaults)]
+              [hash? (id-defaults)]
+              [list? (id-defaults)]
+              [boolean? (id-defaults)]))
 
 (module+ test
   (require quickcheck)
