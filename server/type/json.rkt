@@ -25,6 +25,7 @@
               [number? (id-defaults)]
               [hash? (id-defaults)]
               [boolean? (id-defaults)]
+              [symbol? (id-defaults)]
               [list? (define/generic -->jsexpr ->jsexpr)
                      (define (->jsexpr self)
                        (define (f x)
