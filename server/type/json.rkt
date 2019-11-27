@@ -36,12 +36,15 @@
 (module+ test
   (require quickcheck
            rackunit/quickcheck)
+
+  (define (mk-hash id name)
+    (make-hash `((id . ,id)
+                 (name . ,name))))
+
   (struct my-struct [id name]
     #:methods gen:ToJSON [(define (->jsexpr self)
                             (match self
-                              [(my-struct id name)
-                               (make-hash `((id . ,id)
-                                            (name . ,name)))]))])
+                              [(my-struct id name) (mk-hash id name)]))])
 
   ;;; 数字测试。
   (define number<->json:prop
@@ -89,8 +92,7 @@
                            [(cons id name) (my-struct id name)])
                          xs)]
            [hash-list (map (match-lambda
-                             [(cons id name)
-                              (make-hash `((id . ,id) (name . ,name)))])
+                             [(cons id name) (mk-hash id name)])
                            xs)])
        (equal? (json->string me-list) (jsexpr->string hash-list)))))
   (check-property struct-list<->hash-list:prop))
