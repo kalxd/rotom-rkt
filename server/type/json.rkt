@@ -85,10 +85,12 @@
   (define struct-list<->hash-list:prop
     (property
      ([xs (arbitrary-list (arbitrary-pair arbitrary-integer arbitrary-string))])
-     (let ([me-list (map (match-lambda [(cons id  name) (my-struct id name)])
+     (let ([me-list (map (match-lambda
+                           [(cons id name) (my-struct id name)])
                          xs)]
            [hash-list (map (match-lambda
-                             [(cons id name) (make-hash `((id . ,id) (name . ,name)))])
+                             [(cons id name)
+                              (make-hash `((id . ,id) (name . ,name)))])
                            xs)])
        (equal? (json->string me-list) (jsexpr->string hash-list)))))
   (check-property struct-list<->hash-list:prop))
