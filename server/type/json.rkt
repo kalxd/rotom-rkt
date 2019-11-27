@@ -24,8 +24,14 @@
   #:defaults ([string? (id-defaults)]
               [number? (id-defaults)]
               [hash? (id-defaults)]
-              [list? (id-defaults)]
-              [boolean? (id-defaults)]))
+              [boolean? (id-defaults)]
+              [list? (define/generic -->jsexpr ->jsexpr)
+                     (define (->jsexpr self)
+                       (define (f x)
+                         (cond
+                           [(jsexpr? x) x]
+                           [else (-->jsexpr x)]))
+                       (map f self))]))
 
 (module+ test
   (require quickcheck
@@ -37,35 +43,35 @@
                                (make-hash `((id . ,id)
                                             (name . ,name)))]))])
 
-  ;;; 数字测试
+  ;;; 数字测试。
   (define number<->json:prop
     (property
      ([n arbitrary-integer])
      (equal? (jsexpr->string n) (json->string n))))
   (check-property number<->json:prop)
 
-  ;;; 字符串测试
+  ;;; 字符串测试。
   (define string<->json:prop
     (property
      ([s arbitrary-string])
      (equal? (jsexpr->string s) (json->string s))))
   (check-property string<->json:prop)
 
-  ;;; 布尔值测试
+  ;;; 布尔值测试。
   (define boolean<->json:prop
     (property
      ([b arbitrary-boolean])
      (equal? (jsexpr->string b) (json->string b))))
   (check-property boolean<->json:prop)
 
-  ;;; 数组测试
+  ;;; 数组测试。
   (define list<->json:prop
     (property
      ([xs (arbitrary-list arbitrary-string)])
      (equal? (jsexpr->string xs) (json->string xs))))
   (check-property list<->json:prop)
 
-  ;;; hashmap及struct测试
+  ;;; hashmap及struct测试。
   (define struct<->hash:prop
     (property
      ([id arbitrary-integer]
@@ -73,4 +79,16 @@
      (let ([me (my-struct id name)]
            [o (make-hash `((id . ,id) (name . ,name)))])
        (equal? (jsexpr->string o) (json->string me)))))
-  (check-property struct<->hash:prop))
+  (check-property struct<->hash:prop)
+
+  ;;; 自定义struct列表测试。
+  (define struct-list<->hash-list:prop
+    (property
+     ([xs (arbitrary-list (arbitrary-pair arbitrary-integer arbitrary-string))])
+     (let ([me-list (map (match-lambda [(cons id  name) (my-struct id name)])
+                         xs)]
+           [hash-list (map (match-lambda
+                             [(cons id name) (make-hash `((id . ,id) (name . ,name)))])
+                           xs)])
+       (equal? (json->string me-list) (jsexpr->string hash-list)))))
+  (check-property struct-list<->hash-list:prop))
