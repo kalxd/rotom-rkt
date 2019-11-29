@@ -70,7 +70,7 @@
   (-> (or/c #f any/c) integer? any/c)
   (or v (throw e)))
 
-;;;　渲染出错误信息，总觉着不应该写在这里。
+;;; 渲染出错误信息，总觉着不应该写在这里。
 (define/contract (send/error e)
   (-> error:box/c response?)
   (let ([body (make-hash `((err . ,(error:box-body e))
