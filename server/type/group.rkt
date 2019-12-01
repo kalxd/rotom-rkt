@@ -6,6 +6,7 @@
 
 (provide (all-defined-out))
 
+;;; 分组基本信息。
 (struct group-type [id name create-at]
   #:methods gen:ToJSON
   [(define/generic -->jsexpr ->jsexpr)
