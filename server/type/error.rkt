@@ -3,7 +3,8 @@
 (require json
          web-server/http/response-structs)
 
-(provide other-code
+(provide param-invalid-code
+         other-code
          no-user-code
          no-group-code
          no-emoji-code
@@ -28,13 +29,15 @@
 
 ;;; 以下是枚举.jpg
 (define other-code 0)
+(define param-invalid-code 1)
 (define no-user-code 101)
 (define no-group-code 102)
 (define no-emoji-code 103)
 (define auth-user-code 201)
 
 (define error-msg-hash
-  (make-hash `((,no-user-code . "找不到用户")
+  (make-hash `((,param-invalid-code . "请求参数不正确")
+               (,no-user-code . "找不到用户")
                (,no-group-code . "找不到分组")
                (,no-emoji-code . "找不到表情")
                (,auth-user-code . "你他妈的谁啊！"))))
@@ -42,6 +45,7 @@
 (define/contract (->http-code code)
   (-> integer? (integer-in 100 999))
   (cond
+    [(= param-invalid-code 403)]
     [(= no-user-code code) 404]
     [(= no-group-code code) 404]
     [(= no-emoji-code code) 404]
