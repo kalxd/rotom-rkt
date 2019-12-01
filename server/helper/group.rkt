@@ -10,5 +10,5 @@
 
 (define/contract (group-list state req)
   (-> state/c request? (listof group-type/c))
-  (let ([rows (query-rows state "select id, mkzi from ffzu order by id")])
+  (let ([rows (query-rows state "select id, mkzi, iljmriqi from ffzu order by id")])
     (map vector->group-type rows)))
