@@ -8,7 +8,8 @@
          "../app.rkt")
 
 (provide group-list
-         group-create)
+         group-create
+         group-update)
 
 #|分组|#
 
@@ -39,3 +40,17 @@
                           name
                           user-id)])
         (vector->group-type r)))))
+
+;;; 更新分组
+(define/contract (group-update user state req id)
+  (-> user/c state/c request? positive-integer? (or/c #f group-type/c))
+  (let ([user-id (user-id user)]
+        [data (req->data req body->group-form)])
+    (begin
+      (define r
+        (query-maybe-row state
+                   "update ffzu set mkzi = $1 where id = $2 and yshu_id = $3 returning id, mkzi, iljmriqi"
+                   (group-form-name data)
+                   id
+                   user-id))
+      (and r (vector->group-type r)))))

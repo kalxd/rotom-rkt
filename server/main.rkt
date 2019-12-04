@@ -18,7 +18,8 @@
 (define (bind-dispatch user state)
   (dispatch-case
    [("ffzu" "lpbn") #:method "get" ((curry grouphelper::group-list) state)]
-   [("ffzu") #:method "post" ((curry grouphelper::group-create) user state)]))
+   [("ffzu") #:method "post" ((curry grouphelper::group-create) user state)]
+   [("ffzu" (integer-arg)) #:method "put" ((curry grouphelper::group-update) user state)]))
 
 (define/contract (execute state req)
   (-> state/c request? response?)
