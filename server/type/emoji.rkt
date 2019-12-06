@@ -2,6 +2,7 @@
 
 (require racket/generic
          net/url
+         "./rotom.rkt"
          "./json.rkt"
          "./moment.rkt")
 
@@ -26,7 +27,7 @@
             sql-moment/c))
 
 (define/contract (vector->emoji-type row)
-  (-> vector? emoji-type/c)
+  (-> (vector-size/c 4) emoji-type/c)
   (define-values (id name link create-at)
     (vector->values row))
   (let ([link (string->url link)]

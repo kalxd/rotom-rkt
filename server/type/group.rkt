@@ -1,6 +1,7 @@
 #lang racket
 
 (require racket/generic
+         "./rotom.rkt"
          "./json.rkt"
          "./moment.rkt")
 
@@ -24,7 +25,7 @@
             sql-moment/c))
 
 (define/contract (vector->group-type xs)
-  (-> vector? group-type/c)
+  (-> (vector-size/c 3) group-type/c)
   (match xs
     [(vector id name create_at)
      (group-type id name (sql-timestamp->sql-moment create_at))]))
