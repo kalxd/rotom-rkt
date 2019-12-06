@@ -9,10 +9,11 @@
 
 ;;; 固定数组长度。
 (define/contract (vector-size/c n)
-  (-> (flat-named-contract 'vector-size positive-integer?)
-      flat-contract?)
-  (λ (xs)
-    (= n (vector-length xs))))
+  (-> positive-integer? flat-contract?)
+  (let ([length/c (λ (xs) (= n (vector-length xs)))]
+        [name (format "vector-size/c/~a" n)])
+    (flat-named-contract (string->symbol name)
+                         (and/c vector? length/c))))
 
 (module+ test
   (define check:prop:ok
