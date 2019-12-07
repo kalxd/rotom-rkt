@@ -3,13 +3,15 @@
 (require web-server/http
          "../type/json.rkt"
          "../type/group.rkt"
+         "../type/emoji.rkt"
          "../type/body.rkt"
          "../type/user.rkt"
          "../app.rkt")
 
 (provide group-list
          group-create
-         group-update)
+         group-update
+         group-emoji-list)
 
 #|分组|#
 
@@ -54,3 +56,19 @@
                    id
                    user-id))
       (and r (vector->group-type r)))))
+
+(define GROUP_EMOJI_SQL
+  "select \
+id, mkzi, lmjp, iljmriqi \
+from bnqk \
+where ffzu_id = $1 and yshu_id = $2")
+
+;;; 某组下所有表情。
+(define/contract (group-emoji-list user state req group-id)
+  (-> user/c state/c request? integer? (listof emoji-type/c))
+  (let* ([user-id (user-id user)]
+         [rows (query-rows state
+                           GROUP_EMOJI_SQL
+                           group-id
+                           user-id)])
+    (map vector->emoji-type rows)))
