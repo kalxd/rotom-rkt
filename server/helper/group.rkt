@@ -13,12 +13,20 @@
          group-update
          group-emoji-list)
 
-#|分组|#
+(define GROUP_LIST_SQL
+  "select \
+id, mkzi, iljmriqi \
+from ffzu \
+where yshu_id = $1
+order by id")
 
 ;;; 获取分组列表。
-(define/contract (group-list state req)
-  (-> state/c request? (listof group-type/c))
-  (let ([rows (query-rows state "select id, mkzi, iljmriqi from ffzu order by id")])
+(define/contract (group-list user state req)
+  (-> user/c state/c request? (listof group-type/c))
+  (let* ([user-id (user-id user)]
+         [rows (query-rows state
+                           GROUP_LIST_SQL
+                           user-id)])
     (map vector->group-type rows)))
 
 

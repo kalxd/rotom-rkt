@@ -18,7 +18,7 @@
 ;;; 路由
 (define (bind-dispatch user state)
   (dispatch-case
-   [("ffzu" "lpbn") #:method "get" ((curry grouphelper::group-list) state)]
+   [("ffzu" "lpbn") #:method "get" ((curry grouphelper::group-list) user state)]
    [("ffzu") #:method "post" ((curry grouphelper::group-create) user state)]
    [("ffzu" (integer-arg)) #:method "put" ((curry grouphelper::group-update) user state)]
    [("ffzu" (integer-arg)) #:method "get" ((curry grouphelper::group-emoji-list) user state)]
