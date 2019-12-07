@@ -6,7 +6,8 @@
          "./auth.rkt"
          "./type/error.rkt"
          "./type/json.rkt"
-         (prefix-in grouphelper:: "./helper/group.rkt"))
+         (prefix-in grouphelper:: "./helper/group.rkt")
+         (prefix-in emojihelper:: "./helper/emoji.rkt"))
 
 (provide execute)
 
@@ -19,7 +20,9 @@
   (dispatch-case
    [("ffzu" "lpbn") #:method "get" ((curry grouphelper::group-list) state)]
    [("ffzu") #:method "post" ((curry grouphelper::group-create) user state)]
-   [("ffzu" (integer-arg)) #:method "put" ((curry grouphelper::group-update) user state)]))
+   [("ffzu" (integer-arg)) #:method "put" ((curry grouphelper::group-update) user state)]
+
+   [("bnqk") #:method "post" ((curry emojihelper::emoji-create) user state)]))
 
 (define/contract (execute state req)
   (-> state/c request? response?)
