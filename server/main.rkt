@@ -23,7 +23,8 @@
    [("ffzu" (integer-arg)) #:method "put" ((curry grouphelper::group-update) user state)]
 
    [("bnqk") #:method "post" ((curry emojihelper::emoji-create) user state)]
-   [("bnqk" (integer-arg)) #:method "put" ((curry emojihelper::emoji-update) user state)]))
+   [("bnqk" (integer-arg)) #:method "put" ((curry emojihelper::emoji-update) user state)]
+   [("bnqk" (integer-arg)) #:method "delete" ((curry emojihelper::emoji-delete) user state)]))
 
 (define/contract (execute state req)
   (-> state/c request? response?)

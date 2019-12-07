@@ -8,7 +8,8 @@
          "../app.rkt")
 
 (provide emoji-create
-         emoji-update)
+         emoji-update
+         emoji-delete)
 
 (struct emoji-form [name link group-id])
 
@@ -68,3 +69,17 @@ returning id, mkzi, lmjp, iljmriqi")
                              user-id
                              emoji-id)])
          (and row (vector->emoji-type row)))])))
+
+(define DELETE_SQL
+  "delete from bnqk \
+where yshu_id = $1 and id = $2")
+
+;;; 删除表情。
+(define/contract (emoji-delete user state req emoji-id)
+  (-> user/c state/c request? integer? #t)
+  (let* ([user-id (user-id user)]
+         [_ (query-exec state
+                        DELETE_SQL
+                        user-id
+                        emoji-id)])
+      #t))

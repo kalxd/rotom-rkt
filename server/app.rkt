@@ -13,7 +13,8 @@
          query-row
          query-maybe-row
          query-value
-         query-maybe-value)
+         query-maybe-value
+         query-exec)
 
 #|
 业务紧密相连的模块，写sql离不开它。
@@ -49,3 +50,4 @@
 (extend-db db::query-maybe-row (or/c #f vector?))
 (extend-db db::query-value any/c)
 (extend-db db::query-maybe-value (or/c #f any/c))
+(extend-db db::query-exec void?)
