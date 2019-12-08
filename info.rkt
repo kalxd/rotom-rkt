@@ -1,6 +1,6 @@
 #lang info
 (define collection "rotom-rkt")
-(define deps '("base"))
+(define deps '("base gregor"))
 (define build-deps '("scribble-lib"
                      "racket-doc"
                      "rackunit-lib"
