@@ -18,14 +18,14 @@
                  ('database database))
      (db-config host user password database)]))
 
-(struct app-config [port db]
+(struct app-config [host port db]
   #:transparent)
 
 (define (json->app-config json)
   (match json
-    [(hash-table ('port port) ('db db))
+    [(hash-table ('host host) ('port port) ('db db))
      (let ([db (json->db-config db)])
-       (app-config port db))]))
+       (app-config host port db))]))
 
 (define/contract read-config
   (-> input-port? app-config?)

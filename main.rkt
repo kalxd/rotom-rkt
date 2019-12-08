@@ -11,5 +11,6 @@
          [state (init-state config)])
     (serve/servlet ((curry execute) state)
                    #:port (app-config-port config)
+                   #:listen-ip (app-config-host config)
                    #:command-line? #t
                    #:servlet-regexp #rx"")))
