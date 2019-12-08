@@ -81,7 +81,7 @@
                            (code . ,(error:box-code e))))]
         [http-code (error:box-status e)])
     (response/full http-code
-                   #f
+                   #""
                    (current-seconds)
                    #"application/json"
                    empty
