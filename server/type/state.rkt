@@ -1,6 +1,7 @@
 #lang racket
 
-(require (prefix-in db:: db))
+(require (prefix-in db:: db)
+         "./config.rkt")
 
 (provide init-state
          state/c
@@ -13,17 +14,22 @@
 (define state/c (struct/c state db::connection-pool?))
 
 ;;; 初始化数据库
-(define/contract (init-db)
-  (-> db::connection-pool?)
-  (db::connection-pool
-   (λ ()
-     (db::postgresql-connect #:user "kalxd"
-                             #:database "rotom"))))
+(define/contract (init-db config)
+  (-> app-config? db::connection-pool?)
+  (let ([db (app-config-db config)])
+    (match db
+      [(db-config host user password database)
+       (db::connection-pool
+        (λ ()
+          (db::postgresql-connect #:user user
+                                  #:database database
+                                  #:password password
+                                  #:server host)))])))
 
 ;;; 初始化全局状态
-(define/contract (init-state)
-  (-> state/c)
-  (let ([db (init-db)])
+(define/contract (init-state config)
+  (-> app-config? state/c)
+  (let ([db (init-db config)])
     (state db)))
 
 ;;; 从连接池里获得一个连接
