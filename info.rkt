@@ -6,6 +6,6 @@
                      "rackunit-lib"
                      "quickcheck"))
 (define scribblings '(("scribblings/rotom-rkt.scrbl" ())))
-(define pkg-desc "Description Here")
-(define version "0.0")
-(define pkg-authors '(XGLey))
+(define pkg-desc "自用服务。")
+(define version "1.0")
+(define pkg-authors '(XG.Ley))
