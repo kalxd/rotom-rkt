@@ -5,12 +5,13 @@
 (require racket/hash
          json)
 
-(provide (all-defined-out))
+(provide (except-out (all-defined-out)
+                     get))
 
 (struct db-config [host user password database]
   #:transparent)
 
-(define (json->db-config json)
+(define (hash->db-config json)
   (match json
     [(hash-table ('host host)
                  ('user user)
@@ -21,12 +22,18 @@
 (struct app-config [host port db]
   #:transparent)
 
-(define (json->app-config json)
-  (match json
-    [(hash-table ('host host) ('port port) ('db db))
-     (let ([db (json->db-config db)])
-       (app-config host port db))]))
+(define/contract pref-file
+  path-for-some-system?
+  (let ([dir (find-system-path 'pref-dir)])
+    (build-path dir "rotom.rktd")))
 
-(define/contract read-config
-  (-> input-port? app-config?)
-  (compose json->app-config read-json))
+(define/contract (get key)
+  (-> symbol? (or/c #f any/c))
+  (get-preference key (const #f) 'timestamp pref-file))
+
+(define/contract def-app-config
+  app-config?
+  (let ([host (get 'host)]
+        [port (get 'port)]
+        [database (hash->db-config (get 'database))])
+    (app-config host port database)))
