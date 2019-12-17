@@ -13,6 +13,6 @@
         (make-hash `((id . ,id)
                      (用户名 . ,用户名)))]))])
 
-;;; 这样用户才是好用户
+;;; 这样用户才是好用户。
 (define 用户/c
   (struct/c 用户结构 positive-integer? string?))
