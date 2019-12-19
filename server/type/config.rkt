@@ -2,9 +2,6 @@
 
 #lang racket
 
-(require racket/hash
-         json)
-
 (provide (except-out (all-defined-out)
                      get))
 
