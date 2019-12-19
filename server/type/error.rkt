@@ -57,3 +57,23 @@
                  #"application/json"
                  empty
                  (list (json->byte 错误))))
+
+(module+ test
+  (require quickcheck
+           rackunit/quickcheck)
+
+  (define 所有错误
+    (list 用户未找到
+          分组未找到
+          表情未找到
+          未认证用户
+          不属于你
+          参数格式不正确))
+
+  (define code:prop
+    (property
+     ([任一错误 (choose-one-of 所有错误)])
+     (let ([结果 (发送/错误 任一错误)])
+       (= (response-code 结果)
+          (错误结构-网络码 任一错误)))))
+  (check-property code:prop))
