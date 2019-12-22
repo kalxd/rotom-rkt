@@ -11,7 +11,7 @@
 (define/contract (body->jsexpr input)
   (-> bytes? jsexpr?)
   (with-handlers
-    ([exn:fail? (λ (_) (throw param-invalid-code))])
+    ([exn:fail? (λ (_) (raise 参数格式不正确))])
     (bytes->jsexpr input)))
 
 ;;; 从一个请求中得到相对应的数据，
@@ -20,9 +20,9 @@
   (-> request? (-> jsexpr? any/c) any/c)
   (let ([body-data (request-post-data/raw req)])
     (begin
-      (when (false? body-data) (throw param-invalid-code))
+      (when (false? body-data) (raise 参数格式不正确))
       (with-handlers
-        ([exn:fail? (λ (_) (throw param-invalid-code))])
+        ([exn:fail? (λ (_) (raise 参数格式不正确))])
         (f (body->jsexpr body-data))))))
 
 (module+ test
@@ -76,6 +76,6 @@
      (let* ([body (make-hash `((id . ,id) (name . ,name)))]
             [req (mk-req body)])
        (with-handlers
-         ([error:box? (const #t)])
+         ([错误结构? (const #t)])
          (req->data req jsexpr->fd/1)))))
   (check-property req<->fd/1:fail:type))
