@@ -57,9 +57,10 @@
 (define/contract (检查用户 state req)
   (-> state/c request? 用户/c)
   (let* ([token (token版本 req)]
+         [token (and token (bytes->string/utf-8 token))]
          [user (and token
-                    (userHelper::find-by-token state
-                                               (bytes->string/utf-8 token)))])
+                    (userHelper::根据token查找 state
+                                               token))])
     (begin
       (unless user (raise 未认证用户))
       user)))
