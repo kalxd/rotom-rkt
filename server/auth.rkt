@@ -12,12 +12,11 @@
 
          (prefix-in userHelper:: "./helper/user.rkt"))
 
-(provide check-req)
+(provide 检查用户)
 
 (module+ test
   (require quickcheck
-           rackunit/quickcheck
-           "./type/user.rkt"))
+           rackunit/quickcheck))
 
 ;;; 从头部中找出token。
 (define/contract (头部token 头部列表)
