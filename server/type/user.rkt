@@ -16,3 +16,13 @@
 ;;; 这样用户才是好用户。
 (define 用户/c
   (struct/c 用户结构 positive-integer? string?))
+
+(module+ test
+  (require quickcheck
+           rackunit/quickcheck)
+
+  (define (生成随机用户)
+    (bind-generators
+     ([id (choose-integer 1 9999)]
+      [名字 choose-ascii-letter])
+     (用户结构 id 名字))))
