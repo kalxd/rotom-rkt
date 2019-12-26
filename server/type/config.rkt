@@ -19,16 +19,16 @@
 (struct app-config [host port db]
   #:transparent)
 
-(define/contract pref-file
+(define/contract 配置文件
   path-for-some-system?
   (let ([dir (find-system-path 'pref-dir)])
     (build-path dir "rotom.rktd")))
 
 (define/contract (get key)
   (-> symbol? (or/c #f any/c))
-  (get-preference key (const #f) 'timestamp pref-file))
+  (get-preference key (const #f) 'timestamp 配置文件))
 
-(define/contract def-app-config
+(define/contract 默认配置
   app-config?
   (let ([host (get 'host)]
         [port (get 'port)]
