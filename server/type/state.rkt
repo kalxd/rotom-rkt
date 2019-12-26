@@ -11,12 +11,13 @@
 (struct state [pool])
 
 ;;; state contract
-(define state/c (struct/c state db::connection-pool?))
+(define state/c
+  (struct/c state db::connection-pool?))
 
 ;;; 初始化数据库
 (define/contract (init-db)
   (-> db::connection-pool?)
-  (let ([db (app-config-db def-app-config)])
+  (let ([db (app-config-db 默认配置)])
     (match db
       [(db-config host user password database)
        (db::connection-pool
@@ -27,13 +28,11 @@
                                   #:server host)))])))
 
 ;;; 初始化全局状态
-(define/contract (init-state)
+(define/contract init-state
   (-> state/c)
-  (let ([db (init-db)])
-    (state db)))
+  (compose state init-db))
 
 ;;; 从连接池里获得一个连接
-(define/contract (ask-connection state)
+(define/contract ask-connection
   (-> state/c db::connection?)
-  (let ([pool (state-pool state)])
-    (db::connection-pool-lease pool)))
+  (compose db::connection-pool-lease state-pool))
