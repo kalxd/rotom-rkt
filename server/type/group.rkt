@@ -27,7 +27,7 @@
             sql-moment/c))
 
 (define/contract (vector->分组 xs)
-  (-> (vector-size/c 3) 分组/c)
+  (-> (vector-size/c 4) 分组/c)
   (match xs
     [(vector id 名字 用户id 日期)
      (分组结构 id 名字 用户id (sql-timestamp->sql-moment 日期))]))

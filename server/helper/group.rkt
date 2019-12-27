@@ -8,56 +8,68 @@
          "../type/user.rkt"
          "../app.rkt")
 
-(provide group-list
-         group-create
+(provide 分组/列表
+         分组/创建
          group-update
          group-emoji-list)
 
-(define GROUP_LIST_SQL
-  "select \
-id, 名字, 用户id, 创建日期 \
-from 分组 \
-where 用户id = $1
-order by id")
+(define GROUP_FIELD_LIST
+  (string-join '("id" "名字" "用户id" "创建日期")
+               ", "))
 
 ;;; 获取分组列表。
-(define/contract (group-list 用户 state req)
+(define GROUP_LIST_SQL
+  (format "select \
+~a \
+from 分组 \
+where 用户id = $1 \
+order by id"
+          GROUP_FIELD_LIST))
+
+(define/contract (分组/列表 用户 state req)
   (-> 用户/c state/c request? (listof 分组/c))
   (let* ([用户id (用户结构-id 用户)]
          [rows (query-rows state GROUP_LIST_SQL 用户id)])
     (map vector->分组 rows)))
 
-(struct group-form [name])
+(struct 分组form [名字])
 
-(define/contract (body->group-form json)
-  (-> jsexpr? (struct/c group-form string?))
+(define/contract (body->分组form json)
+  (-> jsexpr? (struct/c 分组form string?))
   (match json
-    [(hash-table ('name name))
-     (group-form name)]))
+    [(hash-table ('名字 name))
+     (分组form name)]))
+
+(define GROUP_CREATE_SQL
+  (format "insert into 分组 \
+(名字, 用户id) \
+values \
+($1, $2) \
+returning ~a" GROUP_FIELD_LIST))
 
 ;;; 新建分组
-(define/contract (group-create user state req)
+(define/contract (分组/创建 user state req)
   (-> 用户/c state/c request? 分组/c)
-  (let* ([data (请求->对应数据 req body->group-form)]
-         [name (group-form-name data)]
+  (let* ([data (请求->对应数据 req body->分组form)]
+         [name (分组form-名字 data)]
          [user-id (用户结构-id user)])
     (begin
       (let ([r (query-row state
-                          "insert into ffzu (mkzi, yshu_id) values ($1, $2) returning id, mkzi, iljmriqi"
+                          GROUP_CREATE_SQL
                           name
                           user-id)])
         (vector->分组 r)))))
 
 ;;; 更新分组
-(define/contract (group-update user state req id)
+(define/contract (group-update 用户 state req id)
   (-> 用户/c state/c request? positive-integer? (or/c #f 分组/c))
-  (let ([user-id (用户结构-id user)]
-        [data (请求->对应数据 req body->group-form)])
+  (let ([user-id (用户结构-id 用户)]
+        [data (请求->对应数据 req body->分组form)])
     (begin
       (define r
         (query-maybe-row state
                    "update ffzu set mkzi = $1 where id = $2 and yshu_id = $3 returning id, mkzi, iljmriqi"
-                   (group-form-name data)
+                   (分组form-名字 data)
                    id
                    user-id))
       (and r (vector->分组 r)))))

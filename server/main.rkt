@@ -11,7 +11,7 @@
          (only-in "./auth.rkt"
                   检查用户)
 
-         (prefix-in grouphelper:: "./helper/group.rkt"))
+         "./helper/group.rkt")
          ;; (prefix-in emojihelper:: "./helper/emoji.rkt"))
 
 (provide execute)
@@ -23,9 +23,10 @@
 ;;; 路由
 (define (bind-dispatch user state)
   (dispatch-case
-   [("分组" "列表") #:method "get" ((curry grouphelper::group-list) user state)]))
+   [("分组" "列表") #:method "get" ((curry 分组/列表) user state)]
+   [("分组" "创建") #:method "post" ((curry 分组/创建) user state)]))
       #|
-   [("ffzu") #:method "post" ((curry grouphelper::group-create) user state)]
+
    [("ffzu" (integer-arg)) #:method "put" ((curry grouphelper::group-update) user state)]
    [("ffzu" (integer-arg)) #:method "get" ((curry grouphelper::group-emoji-list) user state)]))
 
