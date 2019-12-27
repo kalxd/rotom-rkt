@@ -23,12 +23,13 @@
 ;;; 路由
 (define (bind-dispatch user state)
   (dispatch-case
-   [("ffzu" "lpbn") #:method "get" ((curry grouphelper::group-list) user state)]
+   [("分组" "列表") #:method "get" ((curry grouphelper::group-list) user state)]))
+      #|
    [("ffzu") #:method "post" ((curry grouphelper::group-create) user state)]
    [("ffzu" (integer-arg)) #:method "put" ((curry grouphelper::group-update) user state)]
    [("ffzu" (integer-arg)) #:method "get" ((curry grouphelper::group-emoji-list) user state)]))
 
-   #|
+
    [("bnqk") #:method "post" ((curry emojihelper::emoji-create) user state)]
    [("bnqk" (integer-arg)) #:method "put" ((curry emojihelper::emoji-update) user state)]
    [("bnqk" (integer-arg)) #:method "delete" ((curry emojihelper::emoji-delete) user state)]))
@@ -43,7 +44,7 @@
            [result (dispatch-route req)]
            [body (json->byte result)])
       (response/full 200
-                     #f
+                     #""
                      (current-seconds)
                      #f
                      (list (header #"Content-Type" #"application/json"))

@@ -15,20 +15,17 @@
 
 (define GROUP_LIST_SQL
   "select \
-id, mkzi, iljmriqi \
-from ffzu \
-where yshu_id = $1
+id, 名字, 用户id, 创建日期 \
+from 分组 \
+where 用户id = $1
 order by id")
 
 ;;; 获取分组列表。
-(define/contract (group-list user state req)
+(define/contract (group-list 用户 state req)
   (-> 用户/c state/c request? (listof 分组/c))
-  (let* ([user-id (用户结构-id user)]
-         [rows (query-rows state
-                           GROUP_LIST_SQL
-                           user-id)])
-    (map vector->group-type rows)))
-
+  (let* ([用户id (用户结构-id 用户)]
+         [rows (query-rows state GROUP_LIST_SQL 用户id)])
+    (map vector->分组 rows)))
 
 (struct group-form [name])
 
@@ -49,7 +46,7 @@ order by id")
                           "insert into ffzu (mkzi, yshu_id) values ($1, $2) returning id, mkzi, iljmriqi"
                           name
                           user-id)])
-        (vector->group-type r)))))
+        (vector->分组 r)))))
 
 ;;; 更新分组
 (define/contract (group-update user state req id)
@@ -63,7 +60,7 @@ order by id")
                    (group-form-name data)
                    id
                    user-id))
-      (and r (vector->group-type r)))))
+      (and r (vector->分组 r)))))
 
 (define GROUP_EMOJI_SQL
   "select \

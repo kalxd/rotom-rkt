@@ -9,7 +9,7 @@
   ;; 启动服务。
   (let ([state (init-state)])
     (serve/servlet ((curry execute) state)
-                   #:port (app-config-port def-app-config)
-                   #:listen-ip (app-config-host def-app-config)
+                   #:port (app-config-port 默认配置)
+                   #:listen-ip (app-config-host 默认配置)
                    #:command-line? #t
                    #:servlet-regexp #rx"")))
