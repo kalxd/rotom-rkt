@@ -22,8 +22,8 @@ order by id")
 
 ;;; 获取分组列表。
 (define/contract (group-list user state req)
-  (-> user/c state/c request? (listof group-type/c))
-  (let* ([user-id (user-id user)]
+  (-> 用户/c state/c request? (listof 分组/c))
+  (let* ([user-id (用户结构-id user)]
          [rows (query-rows state
                            GROUP_LIST_SQL
                            user-id)])
@@ -40,10 +40,10 @@ order by id")
 
 ;;; 新建分组
 (define/contract (group-create user state req)
-  (-> user/c state/c request? group-type/c)
-  (let* ([data (req->data req body->group-form)]
+  (-> 用户/c state/c request? 分组/c)
+  (let* ([data (请求->对应数据 req body->group-form)]
          [name (group-form-name data)]
-         [user-id (user-id user)])
+         [user-id (用户结构-id user)])
     (begin
       (let ([r (query-row state
                           "insert into ffzu (mkzi, yshu_id) values ($1, $2) returning id, mkzi, iljmriqi"
@@ -53,9 +53,9 @@ order by id")
 
 ;;; 更新分组
 (define/contract (group-update user state req id)
-  (-> user/c state/c request? positive-integer? (or/c #f group-type/c))
-  (let ([user-id (user-id user)]
-        [data (req->data req body->group-form)])
+  (-> 用户/c state/c request? positive-integer? (or/c #f 分组/c))
+  (let ([user-id (用户结构-id user)]
+        [data (请求->对应数据 req body->group-form)])
     (begin
       (define r
         (query-maybe-row state
@@ -73,8 +73,8 @@ where ffzu_id = $1 and yshu_id = $2")
 
 ;;; 某组下所有表情。
 (define/contract (group-emoji-list user state req group-id)
-  (-> user/c state/c request? integer? (listof emoji-type/c))
-  (let* ([user-id (user-id user)]
+  (-> 用户/c state/c request? integer? (listof emoji-type/c))
+  (let* ([user-id (用户结构-id user)]
          [rows (query-rows state
                            GROUP_EMOJI_SQL
                            group-id

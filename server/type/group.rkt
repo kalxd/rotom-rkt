@@ -8,24 +8,24 @@
 (provide (all-defined-out))
 
 ;;; 分组基本信息。
-(struct group-type [id name create-at]
+(struct 分组结构 [id 名字 创建日期]
   #:methods gen:ToJSON
   [(define/generic -->jsexpr ->jsexpr)
    (define (->jsexpr self)
      (match self
-       [(group-type id name t)
+       [(分组结构 id 名字 创建日期)
         (make-hash `((id . ,id)
-                     (name . ,name)
-                     (createAt . ,(-->jsexpr t))))]))])
+                     (名字 . ,名字)
+                     (创建日期 . ,(-->jsexpr 创建日期))))]))])
 
-(define group-type/c
-  (struct/c group-type
+(define 分组/c
+  (struct/c 分组结构
             positive-integer?
             string?
             sql-moment/c))
 
 (define/contract (vector->group-type xs)
-  (-> (vector-size/c 3) group-type/c)
+  (-> (vector-size/c 3) 分组/c)
   (match xs
-    [(vector id name create_at)
-     (group-type id name (sql-timestamp->sql-moment create_at))]))
+    [(vector id 名字 日期)
+     (分组结构 id 名字 (sql-timestamp->sql-moment 日期))]))
