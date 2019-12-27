@@ -15,5 +15,5 @@
 ;;; 查找用户
 (define/contract (根据token查找 state token)
   (-> state/c string? (or/c #f 用户/c))
-  (let ([row (query-maybe-row state "select id, mkzi from yshu_view where token = $1" token)])
+  (let ([row (query-maybe-row state "select id, 用户名 from 用户_视图 where token = $1" token)])
     (and row (row->user row))))
