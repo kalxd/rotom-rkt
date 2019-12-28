@@ -21,24 +21,23 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: bnqk; Type: TABLE; Schema: public; Owner: -
+-- Name: 分组; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.bnqk (
+CREATE TABLE public."分组" (
     id integer NOT NULL,
-    mkzi text DEFAULT ''::text NOT NULL,
-    lmjp text NOT NULL,
-    ffzu_id integer,
-    iljmriqi timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT bnqk_lmjp_check CHECK ((btrim(lmjp) <> ''::text))
+    "名字" text NOT NULL,
+    "用户id" integer NOT NULL,
+    "创建日期" timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT "分组_check" CHECK ((btrim('名字'::text) <> ''::text))
 );
 
 
 --
--- Name: bnqk_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: 分组_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.bnqk_id_seq
+CREATE SEQUENCE public."分组_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -48,30 +47,28 @@ CREATE SEQUENCE public.bnqk_id_seq
 
 
 --
--- Name: bnqk_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: 分组_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.bnqk_id_seq OWNED BY public.bnqk.id;
+ALTER SEQUENCE public."分组_id_seq" OWNED BY public."分组".id;
 
 
 --
--- Name: ffzu; Type: TABLE; Schema: public; Owner: -
+-- Name: 用户; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.ffzu (
+CREATE TABLE public."用户" (
     id integer NOT NULL,
-    mkzi text NOT NULL,
-    yshu_id integer NOT NULL,
-    iljmriqi timestamp with time zone DEFAULT now(),
-    CONSTRAINT ffzu_mkzi_check CHECK ((mkzi <> ''::text))
+    "用户名" text NOT NULL,
+    "创建日期" timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
 --
--- Name: ffzu_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: 用户_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.ffzu_id_seq
+CREATE SEQUENCE public."用户_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -81,29 +78,43 @@ CREATE SEQUENCE public.ffzu_id_seq
 
 
 --
--- Name: ffzu_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: 用户_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.ffzu_id_seq OWNED BY public.ffzu.id;
+ALTER SEQUENCE public."用户_id_seq" OWNED BY public."用户".id;
 
 
 --
--- Name: yshu; Type: TABLE; Schema: public; Owner: -
+-- Name: 用户_视图; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE TABLE public.yshu (
+CREATE VIEW public."用户_视图" AS
+ SELECT "用户".id,
+    "用户"."用户名",
+    md5(("用户"."用户名" || "用户".id)) AS token,
+    "用户"."创建日期"
+   FROM public."用户";
+
+
+--
+-- Name: 表情; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."表情" (
     id integer NOT NULL,
-    mkzi text NOT NULL,
-    iljmriqi timestamp with time zone DEFAULT now(),
-    CONSTRAINT yshu_mkzi_check CHECK ((mkzi <> ''::text))
+    "名字" text NOT NULL,
+    "链接" text NOT NULL,
+    "分组id" integer NOT NULL,
+    "创建日期" timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT "表情_名字_check" CHECK ((btrim("名字") <> ''::text))
 );
 
 
 --
--- Name: yshu_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: 表情_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.yshu_id_seq
+CREATE SEQUENCE public."表情_id_seq"
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -113,82 +124,71 @@ CREATE SEQUENCE public.yshu_id_seq
 
 
 --
--- Name: yshu_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: 表情_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.yshu_id_seq OWNED BY public.yshu.id;
-
-
---
--- Name: yshu_view; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.yshu_view AS
- SELECT yshu.id,
-    yshu.mkzi,
-    md5((yshu.id || yshu.mkzi)) AS token
-   FROM public.yshu;
+ALTER SEQUENCE public."表情_id_seq" OWNED BY public."表情".id;
 
 
 --
--- Name: bnqk id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: 分组 id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.bnqk ALTER COLUMN id SET DEFAULT nextval('public.bnqk_id_seq'::regclass);
-
-
---
--- Name: ffzu id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ffzu ALTER COLUMN id SET DEFAULT nextval('public.ffzu_id_seq'::regclass);
+ALTER TABLE ONLY public."分组" ALTER COLUMN id SET DEFAULT nextval('public."分组_id_seq"'::regclass);
 
 
 --
--- Name: yshu id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: 用户 id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.yshu ALTER COLUMN id SET DEFAULT nextval('public.yshu_id_seq'::regclass);
-
-
---
--- Name: bnqk bnqk_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.bnqk
-    ADD CONSTRAINT bnqk_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."用户" ALTER COLUMN id SET DEFAULT nextval('public."用户_id_seq"'::regclass);
 
 
 --
--- Name: ffzu ffzu_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: 表情 id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.ffzu
-    ADD CONSTRAINT ffzu_pkey PRIMARY KEY (id);
-
-
---
--- Name: yshu yshu_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.yshu
-    ADD CONSTRAINT yshu_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public."表情" ALTER COLUMN id SET DEFAULT nextval('public."表情_id_seq"'::regclass);
 
 
 --
--- Name: bnqk bnqk_ffzu_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 分组 分组_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.bnqk
-    ADD CONSTRAINT bnqk_ffzu_id_fkey FOREIGN KEY (ffzu_id) REFERENCES public.ffzu(id);
+ALTER TABLE ONLY public."分组"
+    ADD CONSTRAINT "分组_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: ffzu ffzu_yshu_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: 用户 用户_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.ffzu
-    ADD CONSTRAINT ffzu_yshu_fkey FOREIGN KEY (yshu_id) REFERENCES public.yshu(id);
+ALTER TABLE ONLY public."用户"
+    ADD CONSTRAINT "用户_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: 表情 表情_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."表情"
+    ADD CONSTRAINT "表情_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: 分组 分组_用户id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."分组"
+    ADD CONSTRAINT "分组_用户id_fkey" FOREIGN KEY ("用户id") REFERENCES public."用户"(id);
+
+
+--
+-- Name: 表情 表情_分组id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."表情"
+    ADD CONSTRAINT "表情_分组id_fkey" FOREIGN KEY ("分组id") REFERENCES public."分组"(id);
 
 
 --
