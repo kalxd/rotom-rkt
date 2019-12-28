@@ -11,8 +11,7 @@
 
 (provide 分组/列表
          分组/创建
-         分组/更新
-         group-emoji-list)
+         分组/更新)
 
 (define GROUP_FIELD_LIST
   (string-join '("id" "名字" "用户id" "创建日期")
@@ -82,19 +81,3 @@ returning ~a"
     (begin
       (unless row (raise 不属于你))
       (vector->分组 row))))
-
-(define GROUP_EMOJI_SQL
-  "select \
-id, mkzi, lmjp, iljmriqi \
-from bnqk \
-where ffzu_id = $1 and yshu_id = $2")
-
-;;; 某组下所有表情。
-(define/contract (group-emoji-list user state req group-id)
-  (-> 用户/c state/c request? integer? (listof emoji-type/c))
-  (let* ([user-id (用户结构-id user)]
-         [rows (query-rows state
-                           GROUP_EMOJI_SQL
-                           group-id
-                           user-id)])
-    (map vector->emoji-type rows)))
