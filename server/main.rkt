@@ -11,9 +11,8 @@
          (only-in "./auth.rkt"
                   检查用户)
 
-         "./helper/group.rkt")
-         ;; (prefix-in emojihelper:: "./helper/emoji.rkt"))
-
+         "./helper/group.rkt"
+         "./helper/emoji.rkt")
 (provide execute)
 
 #|
@@ -25,10 +24,12 @@
   (dispatch-case
    [("分组" "列表") #:method "get" ((curry 分组/列表) user state)]
    [("分组" "创建") #:method "post" ((curry 分组/创建) user state)]
-   [("分组" (integer-arg) "更新") #:method "put" ((curry 分组/更新) user state)]))
+   [("分组" (integer-arg) "更新") #:method "put" ((curry 分组/更新) user state)]
+
+   [("表情" "创建") #:method "post" ((curry 表情/创建) user state)]))
       #|
    [("ffzu" (integer-arg)) #:method "get" ((curry grouphelper::group-emoji-list) user state)]))
-   [("bnqk") #:method "post" ((curry emojihelper::emoji-create) user state)]
+
    [("bnqk" (integer-arg)) #:method "put" ((curry emojihelper::emoji-update) user state)]
    [("bnqk" (integer-arg)) #:method "delete" ((curry emojihelper::emoji-delete) user state)]))
 |#
