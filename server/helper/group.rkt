@@ -13,10 +13,6 @@
          分组/创建
          分组/更新)
 
-(define GROUP_FIELD_LIST
-  (string-join '("id" "名字" "用户id" "创建日期")
-               ", "))
-
 ;;; 获取分组列表。
 (define GROUP_LIST_SQL
   (format "select \
