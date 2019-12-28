@@ -10,7 +10,7 @@
 
 (provide 分组/列表
          分组/创建
-         group-update
+         分组/更新
          group-emoji-list)
 
 (define GROUP_FIELD_LIST
@@ -60,19 +60,25 @@ returning ~a" GROUP_FIELD_LIST))
                           user-id)])
         (vector->分组 r)))))
 
+(define GROUP_UPDATE_SQL
+  (format "update 分组 \
+set 名字 = $1 \
+where id = $2 and 用户id = $3 \
+returning ~a"
+          GROUP_FIELD_LIST))
+
 ;;; 更新分组
-(define/contract (group-update 用户 state req id)
+(define/contract (分组/更新 用户 state req id)
   (-> 用户/c state/c request? positive-integer? (or/c #f 分组/c))
-  (let ([user-id (用户结构-id 用户)]
-        [data (请求->对应数据 req body->分组form)])
-    (begin
-      (define r
-        (query-maybe-row state
-                   "update ffzu set mkzi = $1 where id = $2 and yshu_id = $3 returning id, mkzi, iljmriqi"
-                   (分组form-名字 data)
-                   id
-                   user-id))
-      (and r (vector->分组 r)))))
+  (let* ([用户id (用户结构-id 用户)]
+         [data (请求->对应数据 req body->分组form)]
+         [名字 (分组form-名字 data)]
+         [row (query-maybe-row state
+                               GROUP_UPDATE_SQL
+                               名字
+                               id
+                               用户id)])
+    (and row (vector->分组 row))))
 
 (define GROUP_EMOJI_SQL
   "select \
