@@ -1,35 +1,36 @@
 #lang racket
 
 (require racket/generic
-         net/url
          "./rotom.rkt"
          "./json.rkt"
          "./moment.rkt")
 
 (provide (all-defined-out))
 
-(struct emoji-type [id name link create-at]
+(struct 表情结构 [id 名字 链接 分组id 创建日期]
   #:methods gen:ToJSON
   [(define/generic -->jsexpr ->jsexpr)
    (define (->jsexpr self)
      (match self
-       [(emoji-type id name link create-at)
+       [(表情结构 id 名字 链接 分组id 创建日期)
         (make-hash `((id . ,id)
-                     (name . ,name)
-                     (link . ,(url->string link))
-                     (createAt . ,(-->jsexpr create-at))))]))])
+                     (名字 . ,名字)
+                     (链接 . ,链接)
+                     (创建日期 . ,(-->jsexpr 创建日期))))]))])
 
-(define emoji-type/c
-  (struct/c emoji-type
+(define 表情/c
+  (struct/c 表情结构
             positive-integer?
             string?
-            url?
+            string?
+            positive-integer?
             sql-moment/c))
 
-(define/contract (vector->emoji-type row)
-  (-> (vector-size/c 4) emoji-type/c)
-  (define-values (id name link create-at)
+(define/contract (vector->表情 row)
+  (-> (vector-size/c 5) 表情/c)
+  (define-values (id 名字 链接 创建日期)
     (vector->values row))
-  (let ([link (string->url link)]
-        [create-at (sql-timestamp->sql-moment create-at)])
-    (emoji-type id name link create-at)))
+  (表情结构 id
+            名字
+            链接
+            (sql-timestamp->sql-moment 创建日期)))
