@@ -6,6 +6,7 @@
          "../type/emoji.rkt"
          "../type/body.rkt"
          "../type/user.rkt"
+         "../type/error.rkt"
          "../app.rkt")
 
 (provide 分组/列表
@@ -78,7 +79,9 @@ returning ~a"
                                名字
                                id
                                用户id)])
-    (and row (vector->分组 row))))
+    (begin
+      (unless row (raise 不属于你))
+      (vector->分组 row))))
 
 (define GROUP_EMOJI_SQL
   "select \
