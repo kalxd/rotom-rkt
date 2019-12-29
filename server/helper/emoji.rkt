@@ -11,10 +11,6 @@
          表情/更新
          表情/删除)
 
-(define EMOJI_FILED_LIST
-  (string-join '("id" "名字" "链接" "分组id" "创建日期")
-               ", "))
-
 (struct 表情form [名字 链接 分组id])
 
 (define 表情form/c
@@ -61,6 +57,7 @@ returning ~a"
 ;;; 更新表情。
 (define/contract (表情/更新 用户 state req id)
   (-> 用户/c state/c request? positive-integer? (or/c #f 表情/c))
+  (得到用户的一个表情 state 用户 id)
   (let ([用户id (用户结构-id 用户)]
         [form (请求->对应数据 req body->表情form)])
     (match form
@@ -73,16 +70,12 @@ returning ~a"
                              id)])
          (and row (vector->表情 row)))])))
 
-(define DELETE_SQL
-  "delete from 表情 \
-where id = $1")
-
 ;;; 删除表情。
 (define/contract (表情/删除 用户 state req id)
   (-> 用户/c state/c request? integer? #t)
-  (let ([用户id (用户结构-id 用户)])
-    (begin
-      (query-exec state
-                  DELETE_SQL
-                  id)
-      #t)))
+  (得到用户的一个表情 state 用户 id)
+  (begin
+    (query-exec state
+                "delete from 表情 where id = $1"
+                id)
+    #t))
