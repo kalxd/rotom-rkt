@@ -11,7 +11,8 @@
 
 (provide 分组/列表
          分组/创建
-         分组/更新)
+         分组/更新
+         分组/全部清除)
 
 ;;; 获取分组列表。
 (define GROUP_LIST_SQL
@@ -77,3 +78,11 @@ returning ~a"
     (begin
       (unless row (raise 不属于你))
       (vector->分组 row))))
+
+;;; 删除分组、包括内部所有表情。
+(define/contract (分组/全部清除 用户 state req id)
+  (-> 用户/c state/c request? positive-integer? boolean?)
+  (得到用户的一个分组 state 用户 id)
+  (query-exec state
+              "delete from 分组 where id = $1"
+              id))
