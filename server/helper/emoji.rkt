@@ -3,13 +3,28 @@
 (require web-server/http
          "../type/user.rkt"
          "../type/emoji.rkt"
+         "../type/group.rkt"
          "../type/json.rkt"
          "../type/body.rkt"
          "../app.rkt")
 
-(provide 表情/创建
+(provide 表情/列表
+         表情/创建
          表情/更新
          表情/删除)
+
+(define SELECT_SQL
+  (format "select ~a from 表情 where 分组id = $1"
+          EMOJI_FILED_LIST))
+
+;;; 列表
+(define/contract (表情/列表 用户 state req 分组id)
+  (-> 用户/c state/c request? positive-integer? (listof 表情/c))
+  (得到用户的一个分组 state 用户 分组id)
+  (define rs (query-rows state
+                         SELECT_SQL
+                         分组id))
+  (map vector->表情 rs))
 
 (struct 表情form [名字 链接 分组id])
 
