@@ -9,7 +9,7 @@
 
 (provide 表情/创建
          表情/更新
-         emoji-delete)
+         表情/删除)
 
 (define EMOJI_FILED_LIST
   (string-join '("id" "名字" "链接" "分组id" "创建日期")
@@ -74,15 +74,15 @@ returning ~a"
          (and row (vector->表情 row)))])))
 
 (define DELETE_SQL
-  "delete from bnqk \
-where yshu_id = $1 and id = $2")
+  "delete from 表情 \
+where id = $1")
 
 ;;; 删除表情。
-(define/contract (emoji-delete user state req emoji-id)
+(define/contract (表情/删除 用户 state req id)
   (-> 用户/c state/c request? integer? #t)
-  (let* ([user-id (用户结构-id user)]
-         [_ (query-exec state
-                        DELETE_SQL
-                        user-id
-                        emoji-id)])
-      #t))
+  (let ([用户id (用户结构-id 用户)])
+    (begin
+      (query-exec state
+                  DELETE_SQL
+                  id)
+      #t)))
