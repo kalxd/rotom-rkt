@@ -7,6 +7,7 @@
          "../type/body.rkt"
          "../type/user.rkt"
          "../type/error.rkt"
+         "../type/rotom.rkt"
          "../app.rkt")
 
 (provide 分组/列表
@@ -81,8 +82,9 @@ returning ~a"
 
 ;;; 删除分组、包括内部所有表情。
 (define/contract (分组/全部清除 用户 state req id)
-  (-> 用户/c state/c request? positive-integer? boolean?)
+  (-> 用户/c state/c request? positive-integer? 结果/c)
   (得到用户的一个分组 state 用户 id)
   (query-exec state
               "delete from 分组 where id = $1"
-              id))
+              id)
+  好结果)
