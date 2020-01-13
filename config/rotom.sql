@@ -106,7 +106,7 @@ CREATE TABLE public."表情" (
     "链接" text NOT NULL,
     "分组id" integer NOT NULL,
     "创建日期" timestamp with time zone DEFAULT now() NOT NULL,
-    CONSTRAINT "表情_名字_check" CHECK ((btrim("名字") <> ''::text))
+    CONSTRAINT "表情_链接_check" CHECK ((btrim("链接") <> ''::text))
 );
 
 
