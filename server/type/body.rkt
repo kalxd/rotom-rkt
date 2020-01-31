@@ -15,7 +15,9 @@
     (begin
       (when (false? body-data) (raise 参数格式不正确))
       (with-handlers
-        ([exn:fail? (λ (_) (raise 参数格式不正确))])
+        ([exn:fail? (λ (e)
+                      (displayln e)
+                      (raise 参数格式不正确))])
         (f (bytes->jsexpr body-data))))))
 
 (module+ test
