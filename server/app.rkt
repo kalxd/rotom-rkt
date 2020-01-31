@@ -16,17 +16,13 @@
          query-maybe-value
          query-exec)
 
-#|
-业务紧密相连的模块，写sql离不开它。
-|#
-
 ;;; db::query -> query
 (define-for-syntax (cur-function-name name)
   (let* ([fname (symbol->string name)]
          [cut-name (substring fname 4)])
     (string->symbol cut-name)))
 
-;;; 模板代码写多了手麻，写个宏娱乐一下。
+;;; 样板代码写多了手麻，写个宏娱乐一下。
 (define-syntax (extend-db stx)
   (syntax-case stx ()
     [(_ f return-contract)
