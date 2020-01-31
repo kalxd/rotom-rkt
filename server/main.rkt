@@ -27,6 +27,7 @@
    [("分组" (integer-arg) "更新") #:method "patch" ((curry 分组/更新) user state)]
    [("分组" (integer-arg) "表情列表") #:method "get" ((curry 表情/列表) user state)]
    [("分组" (integer-arg) "全部清除") #:method "delete" ((curry 分组/全部清除) user state)]
+   [("分组" (integer-arg) "清除移动") #:method "patch" ((curry 分组/清除移动) user state)]
 
    [("表情" "创建") #:method "post" ((curry 表情/创建) user state)]
    [("表情" (integer-arg) "更新") #:method "patch" ((curry 表情/更新) user state)]

@@ -15,7 +15,8 @@
 (provide 分组/列表
          分组/创建
          分组/更新
-         分组/全部清除)
+         分组/全部清除
+         分组/清除移动)
 
 ;;; 获取分组列表。
 (define GROUP_LIST_SQL
@@ -93,3 +94,32 @@ returning ~a"
        (db::query-exec conn "delete from 表情 where 分组id = $1" id)
        (db::query-exec conn "delete from 分组 where id = $1" id)
        好结果))))
+
+(struct 移动form [下个id])
+
+(define/contract (body->移动form body)
+  (-> jsexpr? (struct/c 移动form positive-integer?))
+  (match body
+    [(hash-table ('下个分组id id))
+     (移动form id)]))
+
+;;; 删除分组，移动组内表情
+(define/contract (分组/清除移动 用户 state req id)
+  (-> 用户/c state/c request? positive-integer? 结果/c)
+  (let ([用户id (用户结构-id 用户)]
+        [data (请求->对应数据 req body->移动form)])
+    (begin
+      (displayln data)
+      (define 下个分组id (移动form-下个id data))
+      (得到用户的一个分组 state 用户 id)
+      (得到用户的一个分组 state 用户 下个分组id)
+      (let ([conn (ask-connection state)])
+        (db::call-with-transaction
+         conn
+         (λ ()
+           (db::query-exec conn
+                           "update 表情 set 分组id = $1 where 分组id = $2"
+                           下个分组id
+                           id)
+           (db::query-exec conn "delete from 分组 where id = $1" id)
+           好结果))))))
