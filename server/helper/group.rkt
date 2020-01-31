@@ -1,6 +1,7 @@
 #lang racket
 
 (require web-server/http
+         (prefix-in db:: db)
          "../type/json.rkt"
          "../type/group.rkt"
          "../type/emoji.rkt"
@@ -8,6 +9,7 @@
          "../type/user.rkt"
          "../type/error.rkt"
          "../type/rotom.rkt"
+         "../type/state.rkt"
          "../app.rkt")
 
 (provide 分组/列表
@@ -84,7 +86,10 @@ returning ~a"
 (define/contract (分组/全部清除 用户 state req id)
   (-> 用户/c state/c request? positive-integer? 结果/c)
   (得到用户的一个分组 state 用户 id)
-  (query-exec state
-              "delete from 分组 where id = $1"
-              id)
-  好结果)
+  (let ([conn (ask-connection state)])
+    (db::call-with-transaction
+     conn
+     (λ ()
+       (db::query-exec conn "delete from 表情 where 分组id = $1" id)
+       (db::query-exec conn "delete from 分组 where id = $1" id)
+       好结果))))
