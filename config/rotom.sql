@@ -188,7 +188,7 @@ ALTER TABLE ONLY public."分组"
 --
 
 ALTER TABLE ONLY public."表情"
-    ADD CONSTRAINT "表情_分组id_fkey" FOREIGN KEY ("分组id") REFERENCES public."分组"(id) ON DELETE CASCADE;
+    ADD CONSTRAINT "表情_分组id_fkey" FOREIGN KEY ("分组id") REFERENCES public."分组"(id);
 
 
 --
