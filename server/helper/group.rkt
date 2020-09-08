@@ -18,14 +18,19 @@
          分组/全部清除
          分组/清除移动)
 
+;;; 数量子查询
+(define EMOJI_COUNT_SUB_QUERY
+  "(select count(*) from 表情 where 表情.分组id = 分组.id) as 数量")
+
 ;;; 获取分组列表。
 (define GROUP_LIST_SQL
   (format "select \
-~a \
+~a, ~a
 from 分组 \
 where 用户id = $1 \
 order by id"
-          GROUP_FIELD_LIST))
+          GROUP_FIELD_LIST
+          EMOJI_COUNT_SUB_QUERY))
 
 (define/contract (分组/列表 用户 state req)
   (-> 用户/c state/c request? (listof 分组/c))
@@ -46,7 +51,7 @@ order by id"
 (名字, 用户id) \
 values \
 ($1, $2) \
-returning ~a" GROUP_FIELD_LIST))
+returning ~a, 0" GROUP_FIELD_LIST))
 
 ;;; 新建分组
 (define/contract (分组/创建 user state req)
@@ -65,8 +70,8 @@ returning ~a" GROUP_FIELD_LIST))
   (format "update 分组 \
 set 名字 = $1 \
 where id = $2 and 用户id = $3 \
-returning ~a"
-          GROUP_FIELD_LIST))
+returning ~a, ~a"
+          GROUP_FIELD_LIST EMOJI_COUNT_SUB_QUERY))
 
 ;;; 更新分组
 (define/contract (分组/更新 用户 state req id)
