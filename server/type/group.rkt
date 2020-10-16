@@ -14,6 +14,10 @@
   (string-join '("id" "名字" "用户id" "创建日期")
                ", "))
 
+;;; 数量子查询
+(define EMOJI_COUNT_SUB_QUERY
+  "(select count(*) from 表情 where 表情.分组id = 分组.id) as 数量")
+
 ;;; 分组基本信息。
 (struct 分组结构 [id 名字 用户id 创建日期 数量]
   #:methods gen:ToJSON
@@ -43,7 +47,9 @@
 
 (define/contract (查找用户的一个分组 state 用户 id)
   (-> state/c 用户/c positive-integer? (or/c #f 分组/c))
-  (let ([sql (format "select ~a from 分组 where id = $1 and 用户id = $2" GROUP_FIELD_LIST)]
+  (let ([sql (format "select ~a, ~a from 分组 where id = $1 and 用户id = $2"
+                     GROUP_FIELD_LIST
+                     EMOJI_COUNT_SUB_QUERY)]
         [用户id (用户结构-id 用户)])
     (begin
       (define row (query-maybe-row state sql id 用户id))

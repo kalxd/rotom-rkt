@@ -18,10 +18,6 @@
          分组/全部清除
          分组/清除移动)
 
-;;; 数量子查询
-(define EMOJI_COUNT_SUB_QUERY
-  "(select count(*) from 表情 where 表情.分组id = 分组.id) as 数量")
-
 ;;; 获取分组列表。
 (define GROUP_LIST_SQL
   (format "select \
